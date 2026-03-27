@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-
+import slugify from 'slugify'
 const { model, Schema } = mongoose
 
 const DOCUMENT_NAME = 'Product'
@@ -7,9 +7,10 @@ const COLLECTION_NAME = 'Products'
 
 const productSchema = new Schema(
     {
-        product_name: { type: String, required: true },
+        product_name: { type: String, required: true }, //quàn sì xịn
         product_thumb: { type: String, required: true },
         product_description: String,
+        product_slug: String, //quan-si-xin
         product_price: { type: Number, required: true },
         product_quantity: { type: Number, required: true },
         product_type: {
@@ -21,13 +22,34 @@ const productSchema = new Schema(
         product_attributes: {
             type: Schema.Types.Mixed,
             required: true
-        }
+        },
+        product_ratingsAverage: {
+            type: Number,
+            default: 4.5,
+            min: [1.0, 'Rating must be above 1.0'],
+            max: [5.0, 'Rating must be below 5.0'],
+            set: val => Math.round(val * 10) / 10 // làm tròn đến 1 chữ số thập phân
+        },
+        product_variants: {
+            type:Array,
+            default:[]
+
+        },
+        isDraft: { type: Boolean, default: true, index: true ,select:false},
+        isPublished: { type: Boolean, default: false, index: true ,select:false}
     },
     {
         collection: COLLECTION_NAME,
         timestamps: true
     }
 )
+
+//DOcument middleware chạy trước khi save vào database
+productSchema.pre('save', function (next) {
+    this.product_slug = slugify(this.product_name, { lower: true })
+    next()
+})
+
 
 const electronicSchema = new Schema(
     {

@@ -5,7 +5,7 @@ class ProductFactory {
     static productRegistry={}
 
     static regisProductType(type, classRef){
-        ProductFactory.productRegistry[type]=classRef
+        ProductFactory.productRegistry[type]= classRef
     }
 
     static async createProduct(type, payload = {}) {

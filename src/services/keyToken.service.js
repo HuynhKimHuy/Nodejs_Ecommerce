@@ -5,6 +5,7 @@ import { BadRequestError } from "../core/error.respone.js";
 import {Types} from 'mongoose'
 
 class KeyTokenSevice{
+  //Dùng để: Lưu cặp khóa & refresh token của mỗi shop để xác thực request sau này (middleware sẽ lấy ra để verify JWT).
     static createToken = async ({userID, publicKey,privateKey,refreshToken})=>{
             // const newKeyToken = await keyTokenModal.create({
             //     user:userID,

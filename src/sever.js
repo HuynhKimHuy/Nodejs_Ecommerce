@@ -5,7 +5,7 @@ const sever = app.listen(Port , ()=>{
     console.log(`Node Study đang lắng nghe trên ${Port}!`)
 });
 
-// prcess là đối tượng toàn cục của node js
+
 // process.on lắng nghe các sự kiện trong tiến trình đang chạy
 
 process.on('SIGINT', () => {
