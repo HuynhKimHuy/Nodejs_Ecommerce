@@ -7,5 +7,5 @@ const ProductRouter = express.Router()
 
 ProductRouter.use(authentication)
 ProductRouter.post('', asyncHandler(productController.createProduct))
-
+ProductRouter.get('/drafts/all', asyncHandler(productController.getDraftsForShop))
 export default ProductRouter

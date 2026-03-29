@@ -1,5 +1,6 @@
 import { Product as ProductModel, Electronic as ElectronicModel, Clothing as ClothingModel , Furniture as FurnitureModel} from '../model/product.js'
 import { BadRequestError } from '../core/error.respone.js'
+import { findAllDraftsForShop , publicProductByShop} from '../model/repositories/product.repo.js'
 class ProductFactory {
 
     static productRegistry={}
@@ -13,6 +14,17 @@ class ProductFactory {
        return new productClass(payload).createProduct()
     }
 
+    // query
+    static async findAllDraftsForShop( {product_shop, limit = 50, skip = 0}){
+        const query = {product_shop, isDraft: true}
+        return await findAllDraftsForShop({query, limit, skip})
+        
+    }
+    //Put 
+     static async publicProductByShop( {product_shop, product_id}){
+        const query = { product_shop, ispublished: true, isDraft: false}
+        return await publicProductByShop({product_shop, product_id})
+    }
 }
 
 class Product {
