@@ -1,3 +1,4 @@
+import { Mongoose } from 'mongoose'
 import { Product } from '../product.js'
 
 export const queryProducts = async ({ query, limit = 50, skip = 0 }) => {
@@ -17,8 +18,8 @@ export const findPublishedProducts = async ({ query, limit = 50, skip = 0 }) => 
 
 export const publicProductByShop = async ({product_shop, product_id})=>{
     const foundShop = await Product.findOne({
-        product_shop: product_shop,
-        _id: product_id
+        product_shop: new Mongoose.Types.ObjectId(product_shop),
+        _id: new Mongoose.Types.ObjectId(product_id)
     })
     if (!foundShop) return 
 
@@ -28,7 +29,18 @@ export const publicProductByShop = async ({product_shop, product_id})=>{
     return modifiedCount
 }
 
-export default {
-    findAllDraftsForShop,
-    publicProductByShop
+export const unPublicProductByShop = async ({product_shop, product_id})=>{
+    const foundShop = await Product.findOne({
+        product_shop: new Mongoose.Types.ObjectId(product_shop),
+        _id: new Mongoose.Types.ObjectId(product_id)
+    })
+    if (!foundShop) return 
+
+    foundShop.isDraft = true
+    foundShop.isPublished = false
+    const { modifiedCount } = await foundShop.updateOne(foundShop)
+    return modifiedCount
 }
+
+
+

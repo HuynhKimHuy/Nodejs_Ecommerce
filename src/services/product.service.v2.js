@@ -1,29 +1,38 @@
-import { Product as ProductModel, Electronic as ElectronicModel, Clothing as ClothingModel , Furniture as FurnitureModel} from '../model/product.js'
+import { Product as ProductModel, Electronic as ElectronicModel, Clothing as ClothingModel, Furniture as FurnitureModel } from '../model/product.js'
 import { BadRequestError } from '../core/error.respone.js'
-import { findAllDraftsForShop , publicProductByShop} from '../model/repositories/product.repo.js'
+import { findAllDraftsForShop, publicProductByShop } from '../model/repositories/product.repo.js'
 class ProductFactory {
 
-    static productRegistry={}
+    static productRegistry = {}
 
-    static regisProductType(type, classRef){
-        ProductFactory.productRegistry[type]= classRef
+    static regisProductType(type, classRef) {
+        ProductFactory.productRegistry[type] = classRef
     }
 
     static async createProduct(type, payload = {}) {
         const productClass = ProductFactory.productRegistry[type]
-       return new productClass(payload).createProduct()
+        return new productClass(payload).createProduct()
     }
 
     // query
-    static async findAllDraftsForShop( {product_shop, limit = 50, skip = 0}){
-        const query = {product_shop, isDraft: true}
-        return await findAllDraftsForShop({query, limit, skip})
-        
+    static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
+        const query = { product_shop, isDraft: true }
+        return await findAllDraftsForShop({ query, limit, skip })
+
     }
+
+    static async findPublicProductByShop({ product_shop, product_id }) {
+        const query = { product_shop, ispublished: true, isDraft: false }
+        return await findPublishedProducts({ query, product_id })
+    }
+
     //Put 
-     static async publicProductByShop( {product_shop, product_id}){
-        const query = { product_shop, ispublished: true, isDraft: false}
-        return await publicProductByShop({product_shop, product_id})
+    static async putPublishedForShop({ product_shop, product_id }) {
+        return await publicProductByShop({ product_shop, product_id })
+    }
+
+    static async unPutPublishedForShop({ product_shop, product_id }) {
+        return await publicProductByShop({ product_shop, product_id })
     }
 }
 
@@ -93,7 +102,7 @@ class Electronic extends Product {
     }
 }
 
-ProductFactory.regisProductType('Electronic' ,Electronic )
-ProductFactory.regisProductType('Furniture' ,Furniture )
-ProductFactory.regisProductType('Clothing' , Clothing )
+ProductFactory.regisProductType('Electronic', Electronic)
+ProductFactory.regisProductType('Furniture', Furniture)
+ProductFactory.regisProductType('Clothing', Clothing)
 export default ProductFactory
