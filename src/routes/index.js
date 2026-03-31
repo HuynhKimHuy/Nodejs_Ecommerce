@@ -12,8 +12,8 @@ router.use('/v1/api/shop/signup', ShopRouter)
 // All other routes require apiKey
 router.use(apiKey)
 router.use(permissions('0000'))
-
-router.use('/v1/api', AccessRouter)
 router.use('/v1/api/product', ProductRouter)
+router.use('/v1/api', AccessRouter)
+
 
 export default router

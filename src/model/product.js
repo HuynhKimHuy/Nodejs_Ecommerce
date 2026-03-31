@@ -44,6 +44,9 @@ const productSchema = new Schema(
     }
 )
 
+// Tạo text index cho phép tìm kiếm full-text trên product_name và product_description
+productSchema.index({ product_name: 'text', product_description: 'text' })
+
 //DOcument middleware chạy trước khi save vào database
 productSchema.pre('save', function (next) {
     this.product_slug = slugify(this.product_name, { lower: true })

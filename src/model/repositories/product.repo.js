@@ -16,6 +16,20 @@ export const findPublishedProducts = async ({ query, limit = 50, skip = 0 }) => 
     return await queryProducts({ query, limit, skip })
 }
 
+export const searchProductByUser = async ({ keySearch }) => {
+    const regexSearch = new RegExp(keySearch)
+    const result = await Product.find({
+        $text: { $search: regexSearch },
+
+    },{
+        score: { $meta: 'textScore' }
+    })
+    .sort({ score: { $meta: 'textScore' } })
+    .lean()
+    return result
+    }
+
+
 export const publicProductByShop = async ({product_shop, product_id})=>{
     const foundShop = await Product.findOne({
         product_shop: new Mongoose.Types.ObjectId(product_shop),

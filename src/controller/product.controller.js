@@ -65,6 +65,15 @@ class ProductController {
         }).send(res)
     }
 
+    getSearchProduct = async (req, res, next) => {
+        new Created({
+            message: 'Search product success',
+            statusCode: 200,
+            metadata: await ProductFactory.searchProductByUser({
+                keySearch: req.params.keySearch
+            })
+        }).send(res)
+    }
 }
 
 

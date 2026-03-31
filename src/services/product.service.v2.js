@@ -1,6 +1,6 @@
 import { Product as ProductModel, Electronic as ElectronicModel, Clothing as ClothingModel, Furniture as FurnitureModel } from '../model/product.js'
 import { BadRequestError } from '../core/error.respone.js'
-import { findAllDraftsForShop, publicProductByShop } from '../model/repositories/product.repo.js'
+import { findAllDraftsForShop, publicProductByShop, unPublicProductByShop, searchProductByUser} from '../model/repositories/product.repo.js'
 class ProductFactory {
 
     static productRegistry = {}
@@ -26,13 +26,20 @@ class ProductFactory {
         return await findPublishedProducts({ query, product_id })
     }
 
+    static async searchProductByUser({ keySearch }) {
+        return await searchProductByUser({ keySearch })
+    }
     //Put 
     static async putPublishedForShop({ product_shop, product_id }) {
         return await publicProductByShop({ product_shop, product_id })
     }
 
     static async unPutPublishedForShop({ product_shop, product_id }) {
-        return await publicProductByShop({ product_shop, product_id })
+        return await unPublicProductByShop({ product_shop, product_id })
+    }
+
+    static async searchProduct({ keySearch }) {
+
     }
 }
 
