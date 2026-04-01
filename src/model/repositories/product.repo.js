@@ -1,5 +1,6 @@
 import { Mongoose } from 'mongoose'
 import { Product } from '../product.js'
+import { getSelectFields } from '../../untils/getShopdata.js'
 
 export const queryProducts = async ({ query, limit = 50, skip = 0 }) => {
     return await Product.find(query)
@@ -12,6 +13,18 @@ export const queryProducts = async ({ query, limit = 50, skip = 0 }) => {
 export const findAllDraftsForShop = async ({ query, limit = 50, skip = 0 }) => {
     return await queryProducts({ query, limit, skip })
 }
+
+export const findAllProduct = async ({ limit, sort  ,page, filter , select}) => {
+    const skip = (page - 1) * limit
+    const sortOption = sort === 'ctime' ? { _id: -1 } : { _id: 1 }
+    return await Product.find(filter)
+        .sort(sortOption)
+        .skip(skip)
+        .limit(limit)
+        .select(getSelectFields(select))
+        .lean()
+}
+
 export const findPublishedProducts = async ({ query, limit = 50, skip = 0 }) => {
     return await queryProducts({ query, limit, skip })
 }

@@ -6,7 +6,7 @@ import { authentication } from '../../auth/authUntil.js'
 const ProductRouter = express.Router()
 // search
 ProductRouter.get('/search/:keySearch', asyncHandler(productController.getSearchProduct))
-
+ProductRouter.get('', asyncHandler(productController.getAllProduct))
 // authenbtication
 ProductRouter.use(authentication)
 

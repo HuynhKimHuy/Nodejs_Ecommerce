@@ -9,19 +9,25 @@ class Database {
         this.connect();
     }
     async connect() {
+        console.log(`[MongoDB] Attempting to connect...`)
+        console.log(`[MongoDB] Connection string:`, connectString.split('@')[0] + '@****')
         try{
             await mongoose.connect(connectString,{
                 /* pool size là khái niệm về lượng kết nối tối đa 
                 nếu lượng kết nối lớn hơn 50 thì bắt req phải chờ 
                 cho đến khi có kết nối nào rảnh thì sẽ chèn vào 
                 */
-                maxPoolSize : 50
+                maxPoolSize : 50,
+                serverSelectionTimeoutMS: 10000,
+                socketTimeoutMS: 45000
             })
-            console.log(`Connected succes with database with ${config.db.name}`,countConect())
+            console.log(`[MongoDB] ✅ Connected successfully with database: ${config.db.name}`, countConect())
         }
         catch(err){
-            console.error("Cannot connect db")
-            
+            console.error("[MongoDB] ❌ Cannot connect db")
+            console.error("[MongoDB] Error message:", err.message)
+            console.error("[MongoDB] Error code:", err.code)
+            process.exit(1)
         }
     }
     static getInstance() {

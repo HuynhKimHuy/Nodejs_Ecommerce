@@ -1,6 +1,6 @@
 import { Product as ProductModel, Electronic as ElectronicModel, Clothing as ClothingModel, Furniture as FurnitureModel } from '../model/product.js'
 import { BadRequestError } from '../core/error.respone.js'
-import { findAllDraftsForShop, publicProductByShop, unPublicProductByShop, searchProductByUser} from '../model/repositories/product.repo.js'
+import { findAllDraftsForShop, findAllProduct, findPublishedProducts, publicProductByShop, unPublicProductByShop, searchProductByUser } from '../model/repositories/product.repo.js'
 class ProductFactory {
 
     static productRegistry = {}
@@ -14,6 +14,11 @@ class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
+    static async updateProduct(type, productId, payload = {}) {
+        const productClass = ProductFactory.productRegistry[type]
+        return new productClass(payload).createProduct(productId)
+    }
+
     // query
     static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
         const query = { product_shop, isDraft: true }
@@ -22,13 +27,22 @@ class ProductFactory {
     }
 
     static async findPublicProductByShop({ product_shop, product_id }) {
-        const query = { product_shop, ispublished: true, isDraft: false }
+        const query = { product_shop, isPublished: true, isDraft: false }
         return await findPublishedProducts({ query, product_id })
     }
 
     static async searchProductByUser({ keySearch }) {
         return await searchProductByUser({ keySearch })
     }
+
+    static async findAllProduct({ limit = 50 , sort = "ctime" , page = 1 , filter = {ispublished :true} }) {
+         return await findAllProduct({ limit, sort, page, filter , select : ['product_name', 'product_price', 'product_description', 'product_thumb'] })
+    }
+
+    static async findProducts({ keySearch }) {}
+
+    
+
     //Put 
     static async putPublishedForShop({ product_shop, product_id }) {
         return await publicProductByShop({ product_shop, product_id })

@@ -33,6 +33,13 @@ class ProductController {
         }).send(res)
     }
 
+    getAllProduct = async (req, res, next) => {
+        new Created({
+            message: 'Get all product success',
+            statusCode: 200,
+            metadata: await ProductFactory.findAllProduct(req.query)
+        }).send(res)
+    }
     
     getPublishedForShop = async (req, res, next) => {
         new Created({
