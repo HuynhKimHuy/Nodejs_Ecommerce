@@ -7,17 +7,18 @@ const ProductRouter = express.Router()
 // search
 ProductRouter.get('/search/:keySearch', asyncHandler(productController.getSearchProduct))
 ProductRouter.get('', asyncHandler(productController.getAllProduct))
+ProductRouter.get('/:product_id', asyncHandler(productController.getFindProducts))
 // authenbtication
 ProductRouter.use(authentication)
 
 /////
 ProductRouter.post('', asyncHandler(productController.createProduct))
-ProductRouter.post('publish/:id', asyncHandler(productController.putPublishedForShop))
-ProductRouter.post('unPublish/:id', asyncHandler(productController.unPublishedForShop))
+ProductRouter.post('/publish/:id', asyncHandler(productController.putPublishedForShop))
+ProductRouter.patch('/unPublish/:id', asyncHandler(productController.unPublishedForShop))
 
 // query
 ProductRouter.get('/drafts/all', asyncHandler(productController.getDraftsForShop))
-ProductRouter.get('/pubished/all', asyncHandler(productController.getPublishedForShop))
+ProductRouter.get('/published/all', asyncHandler(productController.getPublishedForShop))
 
 
 export default ProductRouter

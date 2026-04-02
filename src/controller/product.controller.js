@@ -41,6 +41,17 @@ class ProductController {
         }).send(res)
     }
     
+    getFindProducts  = async (req, res, next) => {
+        new Created({
+            message: 'Get product success', 
+            statusCode: 200,
+            metadata: await ProductFactory.findProducts({
+                product_id: req.params.product_id,
+                
+            })
+        }).send(res)
+    }
+
     getPublishedForShop = async (req, res, next) => {
         new Created({
             message: 'Get published for shop success',
@@ -50,24 +61,25 @@ class ProductController {
             })
         }).send(res)
     }
-
+    
     putPublishedForShop = async (req, res, next) => {
         new Created({
             message: 'Put published for shop success',
             statusCode: 200,
-            metadata: await ProductFactory.findPublicProductByShop({
+            metadata: await ProductFactory.putPublishedForShop({
                 product_shop: req.user.userID,
-                product_id: req.params.id
+                product_id: req.params.product_id
             })
         }).send(res)
     }
+
     unPublishedForShop = async (req, res, next) => {
         new Created({
             message: 'Put unpublished for shop success',
             statusCode: 200,
             metadata: await ProductFactory.unPutPublishedForShop({
                 product_shop: req.user.userID,
-                product_id: req.params.id
+                product_id: req.params.product_id
             })
         }).send(res)
     }

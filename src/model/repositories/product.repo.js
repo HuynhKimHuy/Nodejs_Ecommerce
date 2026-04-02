@@ -1,6 +1,6 @@
 import { Mongoose } from 'mongoose'
 import { Product } from '../product.js'
-import { getSelectFields } from '../../untils/getShopdata.js'
+import { getSelectFields  , getUnSelectFields} from '../../untils/getShopdata.js'
 
 export const queryProducts = async ({ query, limit = 50, skip = 0 }) => {
     return await Product.find(query)
@@ -25,6 +25,10 @@ export const findAllProduct = async ({ limit, sort  ,page, filter , select}) => 
         .lean()
 }
 
+export const findProducts = async ({ product_id , unSelect }) => {
+    return await Product.findById(product_id).select(getUnSelectFields(unSelect)).lean()
+}
+    
 export const findPublishedProducts = async ({ query, limit = 50, skip = 0 }) => {
     return await queryProducts({ query, limit, skip })
 }
