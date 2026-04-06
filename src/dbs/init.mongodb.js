@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import {countConect} from '../helpers/check.connect.js';
 import config from '../configs/config.mongodb.js';
-// const connectString = `mongodb://${config.db.host}:${config.db.port}/${config.db.name}`
-const connectString =  `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@ac-qjawiq2-shard-00-00.hrvy57a.mongodb.net:27017,ac-qjawiq2-shard-00-01.hrvy57a.mongodb.net:27017,ac-qjawiq2-shard-00-02.hrvy57a.mongodb.net:27017/?ssl=true&replicaSet=atlas-149c59-shard-0&authSource=admin&appName=Cluster0`
+const connectString = `mongodb://${config.db.host}:${config.db.port}/${config.db.name}`
+// const connectString =  `mongodb://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@ac-qjawiq2-shard-00-00.hrvy57a.mongodb.net:27017,ac-qjawiq2-shard-00-01.hrvy57a.mongodb.net:27017,ac-qjawiq2-shard-00-02.hrvy57a.mongodb.net:27017/?ssl=true&replicaSet=atlas-149c59-shard-0&authSource=admin&appName=Cluster0`
 
 class Database {
     constructor() {

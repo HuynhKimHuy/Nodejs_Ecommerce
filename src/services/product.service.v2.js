@@ -1,6 +1,8 @@
 import { Product as ProductModel, Electronic as ElectronicModel, Clothing as ClothingModel, Furniture as FurnitureModel } from '../model/product.js'
+import mongoose from 'mongoose'
 import { BadRequestError } from '../core/error.respone.js'
-import { findAllDraftsForShop, findAllProduct, findPublishedProducts, publicProductByShop, unPublicProductByShop, searchProductByUser, findProducts } from '../model/repositories/product.repo.js'
+import { findAllDraftsForShop, findAllProduct, findPublishedProducts, publicProductByShop, unPublicProductByShop, searchProductByUser, findProducts, updateProductById } from '../model/repositories/product.repo.js'
+import { removeEmptyFields, updateNestedObjectParser } from '../untils/getShopdata.js'
 class ProductFactory {
 
     static productRegistry = {}
@@ -14,10 +16,13 @@ class ProductFactory {
         return new productClass(payload).createProduct()
     }
 
-    static async updateProduct(type, productId, payload = {}) {
+    static async updateProduct(type, product_id, payload) {
         const productClass = ProductFactory.productRegistry[type]
-        return new productClass(payload).createProduct(productId)
+        return new productClass(payload).updateProduct(product_id)
     }
+
+
+
 
     // query
     static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
@@ -35,12 +40,12 @@ class ProductFactory {
         return await searchProductByUser({ keySearch })
     }
 
-    static async findAllProduct({ limit = 50 , sort = "ctime" , page = 1 , filter = {isPublished :true} }) {
-         return await findAllProduct({ limit, sort, page, filter , select : ['product_name', 'product_price', 'product_description', 'product_thumb'] })
+    static async findAllProduct({ limit = 50, sort = "ctime", page = 1, filter = { isPublished: true } }) {
+        return await findAllProduct({ limit, sort, page, filter, select: ['product_name', 'product_price', 'product_description', 'product_thumb'] })
     }
 
-    static async findProducts({ product_id,  }) {
-        return await findProducts({ product_id, unSelect : ['__v'] })
+    static async findProducts({ product_id, }) {
+        return await findProducts({ product_id, unSelect: ['__v'] })
     }
 
     //Put 
@@ -52,9 +57,6 @@ class ProductFactory {
         return await unPublicProductByShop({ product_shop, product_id })
     }
 
-    static async searchProduct({ keySearch }) {
-
-    }
 }
 
 class Product {
@@ -79,47 +81,105 @@ class Product {
     }
 
     async createProduct(product_id) {
-        const payload = {
-            product_name: this.product_name,
-            product_thumb: this.product_thumb,
-            product_description: this.product_description,
-            product_price: this.product_price,
-            product_quantity: this.product_quantity,
-            product_type: this.product_type,
-            product_shop: this.product_shop,
-            product_attributes: product_id ?? this.product_attributes
-        }
-        if (product_id) payload._id = product_id
-        return await ProductModel.create(payload)
+        return await ProductModel.create({ ...this, _id: product_id })
     }
+    async updateProduct(product_id, updateBody) {
+        return await updateProductById({
+            product_id,
+            updateBody,
+            model: ProductModel
+        })
+    }
+
 }
 
 class Clothing extends Product {
     async createProduct() {
-        const newClothing = await ClothingModel.create(this.product_attributes)
+        const productId = new mongoose.Types.ObjectId()
+        const newClothing = await ClothingModel.create({
+            ...this.product_attributes,
+            product_id: productId,
+            product_shop: this.product_shop
+        })
         if (!newClothing) throw new BadRequestError('create Clothings Error')
-        const newPrduct = await super.createProduct(newClothing._id)
-        return newPrduct
+        const newProduct = await super.createProduct(productId)
+        return newProduct
     }
+
+    async updateProduct(product_id) {
+        const objParams = this
+        if (objParams.product_attributes) {
+            await updateProductById({
+                product_id,
+                updateBody: {
+                    ...objParams.product_attributes
+                },
+                model: ClothingModel
+            })
+        }
+        const newProduct = await super.updateProduct(product_id, objParams)
+        return newProduct
+    }
+
 }
 
 class Furniture extends Product {
     async createProduct() {
-        const newFurniture = await FurnitureModel.create(this.product_attributes)
+        const productId = new mongoose.Types.ObjectId()
+        const newFurniture = await FurnitureModel.create({
+            ...this.product_attributes,
+            product_id: productId,
+            product_shop: this.product_shop
+        })
         if (!newFurniture) throw new BadRequestError('create Furniture Error')
 
-        const newPrduct = await super.createProduct(newFurniture._id)
-        return newPrduct
+        const newProduct = await super.createProduct(productId)
+        return newProduct
+    }
+
+    async updateProduct(product_id) {
+        const objParams = this
+        if (objParams.product_attributes) {
+            await updateProductById({
+                product_id,
+                updateBody: {
+                    ...objParams.product_attributes
+                },
+                model: FurnitureModel
+            })
+        }
+        const newProduct = await super.updateProduct(product_id, objParams)
+        return newProduct
     }
 }
 
 class Electronic extends Product {
     async createProduct() {
-        const newElectronic = await ElectronicModel.create(this.product_attributes)
-        if (!newElectronic) throw new BadRequestError('create Electronic Error')
+        const productId = new mongoose.Types.ObjectId()
 
-        const newPrduct = await super.createProduct(newElectronic._id)
-        return newPrduct
+        const newElectronic = await ElectronicModel.create({
+            ...this.product_attributes,
+            product_id: productId,
+            product_shop: this.product_shop
+        })
+        if (!newElectronic) throw new BadRequestError
+            ('create Electronic Error')
+        const newProduct = await super.createProduct(productId)
+        return newProduct
+    }
+
+    async updateProduct(product_id) {
+        const objParams = removeEmptyFields(this)
+        if (objParams.product_attributes) {
+            await updateProductById({
+                product_id,
+                updateBody: updateNestedObjectParser(objParams.product_attributes),
+                model: ElectronicModel
+            })
+        }
+        const newProduct = await super.updateProduct(product_id,  updateNestedObjectParser(objParams))
+        return newProduct
+
     }
 }
 

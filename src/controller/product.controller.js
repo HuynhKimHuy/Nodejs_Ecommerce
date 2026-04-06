@@ -3,18 +3,32 @@ import ProductFactory from "../services/product.service.v2.js"
 
 class ProductController {
     createProduct = async (req, res, next) => {
-      
         new Created({
             message: 'Create product success',
             statusCode: 201,
             metadata: await ProductFactory.createProduct(req.body.product_type,
-               {
-                ...req.body,
-                product_shop: req.user.userID
-               }
+                {
+                    ...req.body,
+                    product_shop: req.user.userID
+                }
             )
         }).send(res)
     }
+
+    updateProduct = async (req, res, next) => {
+        new Created({
+            message: 'Update product success',
+            statusCode: 200,
+            metadata: await ProductFactory.updateProduct(req.body.product_type,req.params.product_id,
+                {
+                    ...req.body,
+                    product_shop: req.user.userID
+                }
+            )
+        }).send(res)
+    }
+
+
 
     //Query//
     /**
@@ -40,14 +54,14 @@ class ProductController {
             metadata: await ProductFactory.findAllProduct(req.query)
         }).send(res)
     }
-    
-    getFindProducts  = async (req, res, next) => {
+
+    getFindProducts = async (req, res, next) => {
         new Created({
-            message: 'Get product success', 
+            message: 'Get product success',
             statusCode: 200,
             metadata: await ProductFactory.findProducts({
                 product_id: req.params.product_id,
-                
+
             })
         }).send(res)
     }
@@ -61,14 +75,14 @@ class ProductController {
             })
         }).send(res)
     }
-    
+
     putPublishedForShop = async (req, res, next) => {
         new Created({
             message: 'Put published for shop success',
             statusCode: 200,
             metadata: await ProductFactory.putPublishedForShop({
                 product_shop: req.user.userID,
-                product_id: req.params.product_id
+                product_id: req.params.id
             })
         }).send(res)
     }
@@ -79,7 +93,7 @@ class ProductController {
             statusCode: 200,
             metadata: await ProductFactory.unPutPublishedForShop({
                 product_shop: req.user.userID,
-                product_id: req.params.product_id
+                product_id: req.params.id
             })
         }).send(res)
     }

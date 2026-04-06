@@ -11,10 +11,11 @@ ProductRouter.get('/:product_id', asyncHandler(productController.getFindProducts
 // authenbtication
 ProductRouter.use(authentication)
 
-/////
+///// Create, update, delete
 ProductRouter.post('', asyncHandler(productController.createProduct))
+ProductRouter.patch('/:product_id', asyncHandler(productController.updateProduct))
 ProductRouter.post('/publish/:id', asyncHandler(productController.putPublishedForShop))
-ProductRouter.patch('/unPublish/:id', asyncHandler(productController.unPublishedForShop))
+ProductRouter.post('/unPublish/:id', asyncHandler(productController.unPublishedForShop))
 
 // query
 ProductRouter.get('/drafts/all', asyncHandler(productController.getDraftsForShop))
@@ -24,4 +25,3 @@ ProductRouter.get('/published/all', asyncHandler(productController.getPublishedF
 export default ProductRouter
 
 
-    

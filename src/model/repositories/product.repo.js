@@ -1,4 +1,4 @@
-import { Mongoose } from 'mongoose'
+import mongoose from 'mongoose'
 import { Product } from '../product.js'
 import { getSelectFields  , getUnSelectFields} from '../../untils/getShopdata.js'
 
@@ -10,9 +10,15 @@ export const queryProducts = async ({ query, limit = 50, skip = 0 }) => {
         .limit(limit)
         .lean()
 }
+
+export const updateProductById = async ({ product_id, updateBody , model , isNew = true }) => {
+    return await model.findOneAndUpdate({ _id: product_id }, updateBody, { new: isNew })
+}
+
 export const findAllDraftsForShop = async ({ query, limit = 50, skip = 0 }) => {
     return await queryProducts({ query, limit, skip })
 }
+
 
 export const findAllProduct = async ({ limit, sort  ,page, filter , select}) => {
     const skip = (page - 1) * limit
@@ -49,28 +55,28 @@ export const searchProductByUser = async ({ keySearch }) => {
 
 export const publicProductByShop = async ({product_shop, product_id})=>{
     const foundShop = await Product.findOne({
-        product_shop: new Mongoose.Types.ObjectId(product_shop),
-        _id: new Mongoose.Types.ObjectId(product_id)
+        product_shop: new mongoose.Types.ObjectId(product_shop),
+        _id: new mongoose.Types.ObjectId(product_id)
     })
     if (!foundShop) return 
 
     foundShop.isDraft = false
     foundShop.isPublished = true
-    const { modifiedCount } = await foundShop.updateOne(foundShop)
-    return modifiedCount
+    await foundShop.save()
+    return foundShop
 }
 
 export const unPublicProductByShop = async ({product_shop, product_id})=>{
     const foundShop = await Product.findOne({
-        product_shop: new Mongoose.Types.ObjectId(product_shop),
-        _id: new Mongoose.Types.ObjectId(product_id)
+        product_shop: new mongoose.Types.ObjectId(product_shop),
+        _id: new mongoose.Types.ObjectId(product_id)
     })
     if (!foundShop) return 
 
     foundShop.isDraft = true
     foundShop.isPublished = false
-    const { modifiedCount } = await foundShop.updateOne(foundShop)
-    return modifiedCount
+    await foundShop.save()
+    return { modifiedCount: 1 }
 }
 
 

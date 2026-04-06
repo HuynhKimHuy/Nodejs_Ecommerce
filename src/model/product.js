@@ -16,12 +16,13 @@ const productSchema = new Schema(
         product_type: {
             type: String,
             required: true,
-            enum: ['Electronics', 'Clothing', 'Furniture']
+            enum: ['Electronic', 'Clothing', 'Furniture']
         },
         product_shop: { type: Schema.Types.ObjectId, ref: 'Shop' },
         product_attributes: {
             type: Schema.Types.Mixed,
             required: true
+
         },
         product_ratingsAverage: {
             type: Number,
@@ -31,12 +32,12 @@ const productSchema = new Schema(
             set: val => Math.round(val * 10) / 10 // làm tròn đến 1 chữ số thập phân
         },
         product_variants: {
-            type:Array,
-            default:[]
+            type: Array,
+            default: []
 
         },
-        isDraft: { type: Boolean, default: true, index: true ,select:false},
-        isPublished: { type: Boolean, default: false, index: true ,select:false}
+        isDraft: { type: Boolean, default: true, index: true, select: false },
+        isPublished: { type: Boolean, default: false, index: true, select: false }
     },
     {
         collection: COLLECTION_NAME,
@@ -56,6 +57,7 @@ productSchema.pre('save', function (next) {
 
 const electronicSchema = new Schema(
     {
+        product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true, unique: true },
         product_shop: { type: Schema.Types.ObjectId, ref: "Shop" },
         manufacturer: { type: String, required: true },
         size: String,
@@ -69,6 +71,7 @@ const electronicSchema = new Schema(
 
 const clothingSchema = new Schema(
     {
+        product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true, unique: true },
         product_shop: { type: Schema.Types.ObjectId, ref: "Shop" },
         brand: { type: String, required: true },
         size: String,
@@ -82,6 +85,7 @@ const clothingSchema = new Schema(
 
 const furnitureSchema = new Schema(
     {
+        product_id: { type: Schema.Types.ObjectId, ref: 'Product', required: true, unique: true },
         product_shop: { type: Schema.Types.ObjectId, ref: "Shop" },
         brand: { type: String, required: true },
         size: String,
