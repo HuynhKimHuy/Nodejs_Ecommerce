@@ -27,7 +27,7 @@ export const findAllProduct = async ({ limit, sort  ,page, filter , select}) => 
         .sort(sortOption)
         .skip(skip)
         .limit(limit)
-        .select(getSelectFields(select))
+    .select(getSelectFields({ fields: select }))
         .lean()
 }
 

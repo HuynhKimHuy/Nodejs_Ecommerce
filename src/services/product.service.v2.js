@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import { BadRequestError } from '../core/error.respone.js'
 import { findAllDraftsForShop, findAllProduct, findPublishedProducts, publicProductByShop, unPublicProductByShop, searchProductByUser, findProducts, updateProductById } from '../model/repositories/product.repo.js'
 import { removeEmptyFields, updateNestedObjectParser } from '../untils/getShopdata.js'
+import { insertInventory } from "../model/repositories/inventory.repo.js"
 class ProductFactory {
 
     static productRegistry = {}
@@ -21,9 +22,6 @@ class ProductFactory {
         return new productClass(payload).updateProduct(product_id)
     }
 
-
-
-
     // query
     static async findAllDraftsForShop({ product_shop, limit = 50, skip = 0 }) {
         const query = { product_shop, isDraft: true }
@@ -40,8 +38,14 @@ class ProductFactory {
         return await searchProductByUser({ keySearch })
     }
 
-    static async findAllProduct({ limit = 50, sort = "ctime", page = 1, filter = { isPublished: true } }) {
-        return await findAllProduct({ limit, sort, page, filter, select: ['product_name', 'product_price', 'product_description', 'product_thumb'] })
+    static async findAllProduct({
+        limit = 50,
+        sort = "ctime",
+        page = 1,
+        filter = { isPublished: true },
+        select = ['product_name', 'product_price', 'product_description', 'product_thumb']
+    }) {
+        return await findAllProduct({ limit, sort, page, filter, select })
     }
 
     static async findProducts({ product_id, }) {
@@ -81,7 +85,18 @@ class Product {
     }
 
     async createProduct(product_id) {
-        return await ProductModel.create({ ...this, _id: product_id })
+        const newProduct = await ProductModel.create({ ...this, _id: product_id })
+
+        if (newProduct) {
+            await insertInventory({
+                productId: newProduct._id,
+                shopId: this.product_shop,
+                stock: this.product_quantity
+            })
+        }
+
+
+        return newProduct
     }
     async updateProduct(product_id, updateBody) {
         return await updateProductById({
@@ -177,7 +192,7 @@ class Electronic extends Product {
                 model: ElectronicModel
             })
         }
-        const newProduct = await super.updateProduct(product_id,  updateNestedObjectParser(objParams))
+        const newProduct = await super.updateProduct(product_id, updateNestedObjectParser(objParams))
         return newProduct
 
     }

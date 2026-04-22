@@ -1,12 +1,14 @@
 import _ from "lodash"
-import { ObjectId } from "mongodb"
+import { Types } from "mongoose"
+
+const convertToObjectId = id => new Types.ObjectId(id)
 
 const getDataShop = ({ fields = [], object = {} }) => _.pick(object, fields)
 
 const getSelectFields = ({ fields = [] }) => {
     return Object.fromEntries(fields.map((field) => [field, 1]))
 }
-
+// lấy các field 
 const getUnSelectFields = ({ fields = [] }) => {
     return Object.fromEntries(fields.map((field) => [field, 0]))
 }
@@ -22,7 +24,6 @@ const removeEmptyFields = obj => {
 
 const updateNestedObjectParser = obj => {
     const result = {}
-
     // Kiểm tra null/undefined
     if (!obj || typeof obj !== 'object') {
         return result
@@ -52,5 +53,6 @@ export {
     getSelectFields,
     getUnSelectFields,
     removeEmptyFields,
-    updateNestedObjectParser
+    updateNestedObjectParser,
+    convertToObjectId
 }
