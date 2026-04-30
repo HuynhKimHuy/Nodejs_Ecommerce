@@ -83,5 +83,20 @@ export const unPublicProductByShop = async ({ product_shop, product_id }) => {
     return { modifiedCount: 1 }
 }
 
+export const checkProductByServer = async (products = []) => {
+    return await Promise.all(
+        products.map(async (product) => {
+            const foundProduct = await getProductById({ productId: product.productId })
+            if (!foundProduct) return null
+            return {
+                productId: product.productId,
+                price: foundProduct.product_price,
+                product_shop: foundProduct.product_shop,
+                quantity: product.quantity
+            }
+        })
+    )
+
+}
 
 
